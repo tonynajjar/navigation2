@@ -1,0 +1,40 @@
+{
+	"image": "osrf/ros:rolling-desktop",
+	"postCreateCommand": "apt update && apt upgrade -y && rosdep install --from-paths /root/ros2_ws/src/ --ignore-src -r -y",
+	"runArgs": [
+		"-it",
+		"--name=navigation2",
+		"--restart=unless-stopped",
+		"--network=host",
+		"--cap-add=ALL",
+		"--privileged",
+		"--shm-size=1024M",
+		"--volume=/etc/localtime:/etc/localtime:ro",
+		"--volume=/etc/timezone:/etc/timezone:ro",
+		"--volume=/proc:/writable-proc",
+		"--volume=/tmp/.X11-unix:/tmp/.X11-unix",
+		"--volume=${localEnv:HOME}/.deepcv_bash_history:/root/.bash_history",
+		"--volume=${localEnv:HOME}/.deepcv_zsh_history:/root/.zsh_history",
+		"--log-driver=journald",
+		"--gpus=all"
+	],
+	"containerEnv": {
+		"DISPLAY": "${localEnv:DISPLAY}",
+		"NVIDIA_VISIBLE_DEVICES": "all"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+			],
+			"settings": {
+				"terminal.integrated.profiles.linux": {
+				"bash": {
+					"path": "bash"
+				}
+			},
+			"terminal.integrated.defaultProfile.linux": "bash"}
+		}
+	},
+	"workspaceMount": "source=${localWorkspaceFolder},target=/root/ros2_ws/src,type=bind",
+	"workspaceFolder": "/root/ros2_ws/src"
+}
