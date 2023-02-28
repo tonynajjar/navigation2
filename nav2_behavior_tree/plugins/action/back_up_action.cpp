@@ -44,6 +44,7 @@ BackUpAction::BackUpAction(
 void BackUpAction::on_tick()
 {
   increment_recovery_count();
+  should_send_goal_ = false;
 }
 
 }  // namespace nav2_behavior_tree
