@@ -1,6 +1,6 @@
 {
 	"image": "osrf/ros:rolling-desktop",
-	"postCreateCommand": "apt update && apt upgrade -y && rosdep install --from-paths /root/ros2_ws/src/ --ignore-src -r -y",
+	"postCreateCommand": "apt update && apt upgrade -y && rosdep install --from-paths /root/ros2_ws/src/ --ignore-src -r -y && cd /root/ros2_ws && source /opt/ros/rolling/setup.bash && colcon build --symlink-install",
 	"runArgs": [
 		"-it",
 		"--name=navigation2",
