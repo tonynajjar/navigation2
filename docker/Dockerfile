@@ -80,7 +80,7 @@ RUN git clone https://github.com/ros-planning/navigation2 -b $ROS_DISTRO
 WORKDIR $HOME/overlay_ws
 RUN sudo apt update && rosdep update && rosdep install --from-paths src --ignore-src -y -r && sudo rm -rf /var/lib/apt/lists/*
 RUN sudo apt update && sudo apt install -y ros-$ROS_DISTRO-ompl ros-$ROS_DISTRO-turtlebot3-gazebo && sudo rm -rf /var/lib/apt/lists/*
-RUN --mount=type=cache,target=$CCACHE_DIR,uid=1000 source /opt/ros/$ROS_DISTRO/setup.bash && colcon build --symlink-install --mixin ccache release --cmake-args -DBUILD_TESTING=OFF || true && \
+RUN --mount=type=cache,target=$CCACHE_DIR,uid=1000 source /opt/ros/$ROS_DISTRO/setup.bash && colcon build --symlink-install --mixin ccache release --cmake-args -DBUILD_TESTING=OFF && \
     ccache --show-stats --verbose
 
 ENV TURTLEBOT3_MODEL=waffle
