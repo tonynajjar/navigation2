@@ -1,4 +1,4 @@
-ARG ROS_DISTRO=rolling
+ARG ROS_DISTRO=humble
 
 FROM osrf/ros:${ROS_DISTRO}-desktop-full as base
 
@@ -73,16 +73,18 @@ RUN wget -q https://github.com/wyca-robotics/openvdb/releases/download/v8.2.0-de
 FROM base AS overlay
 
 WORKDIR $HOME/overlay_ws/src
-COPY underlay.repos .
-RUN vcs import < underlay.repos
-RUN git clone https://github.com/ros-planning/navigation2
+COPY underlay.$ROS_DISTRO.repos .
+RUN vcs import < underlay.$ROS_DISTRO.repos
+RUN git clone https://github.com/ros-planning/navigation2 -b $ROS_DISTRO
 
 WORKDIR $HOME/overlay_ws
 RUN sudo apt update && rosdep update && rosdep install --from-paths src --ignore-src -y -r && sudo rm -rf /var/lib/apt/lists/*
-RUN sudo apt update && sudo apt install ros-rolling-ompl ros-rolling-turtlebot3-gazebo && sudo rm -rf /var/lib/apt/lists/*
-RUN --mount=type=cache,target=$CCACHE_DIR,uid=1000 source /opt/ros/rolling/setup.bash && colcon build --symlink-install --mixin ccache release --cmake-args -DBUILD_TESTING=OFF || true && \
+RUN sudo apt update && sudo apt install -y ros-$ROS_DISTRO-ompl ros-$ROS_DISTRO-turtlebot3-gazebo && sudo rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=$CCACHE_DIR,uid=1000 source /opt/ros/$ROS_DISTRO/setup.bash && colcon build --symlink-install --mixin ccache release --cmake-args -DBUILD_TESTING=OFF || true && \
     ccache --show-stats --verbose
 
+ENV TURTLEBOT3_MODEL=waffle
+ENV GAZEBO_MODEL_PATH="${GAZEBO_MODEL_PATH}:/opt/ros/$ROS_DISTRO/share/turtlebot3_gazebo/models"
 
 FROM overlay as dev
 
