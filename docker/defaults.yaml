@@ -1,0 +1,14 @@
+# Colcon configurations
+{
+  "build":
+    {
+      "symlink-install": true,
+      "mixin": ["ccache", "release", "coverage-gcc", "coverage-pytest", "build-testing-on"],
+      "build-base": "/home/angsa/overlay_ws/build",
+      "install-base": "/home/angsa/overlay_ws/install",
+      "base-paths":
+        [
+          "/home/angsa/overlay_ws/src",
+        ],
+    },
+}

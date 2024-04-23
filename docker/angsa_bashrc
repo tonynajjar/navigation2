@@ -1,0 +1,46 @@
+# #!/usr/bin/env bash
+
+OVERLAY_DIR=~/overlay_ws
+
+# https://docs.ros.org/en/rolling/Tutorials/Workspace/Creating-A-Workspace.html#source-the-overlay
+OVERLAY=$OVERLAY_DIR/install/setup.bash
+UNDERLAY=/opt/ros/${ROS_DISTRO}/setup.bash
+if [ -f "$OVERLAY" ]; then
+    source $OVERLAY
+else
+    source $UNDERLAY
+fi
+
+export RMW_IMPLEMENTATION="rmw_fastrtps_cpp"
+# export FASTRTPS_DEFAULT_PROFILES_FILE="$OVERLAY_DIR/src/angsa-robot/config/dds/fastdds_jetson.xml"
+
+
+# See https://docs.ros.org/en/rolling/How-To-Guides/DDS-tuning.html
+sudo sysctl -qw net.core.wmem_max=2147483647
+sudo sysctl -qw net.core.rmem_max=2147483647
+sudo sysctl -qw net.ipv4.ipfrag_high_thresh=134217728
+sudo sysctl -qw net.ipv4.ipfrag_time=3
+
+# TODO: is it needed?
+# # Enable multicasting on the lo device.
+# sudo ifconfig lo multicast
+
+# Fix deprecation messages with symlink-installed python packages
+# See https://github.com/colcon/colcon-core/issues/454#issuecomment-1142649390
+export PYTHONWARNINGS=ignore:::setuptools.command.install,ignore:::setuptools.command.easy_install,ignore:::pkg_resources
+
+# # Source aliases
+# source $OVERLAY_DIR/src/angsa-robot/config/aliases.bash
+
+# https://colcon.readthedocs.io/en/released/user/installation.html#enable-completion
+source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+export COLCON_LOG_PATH=$OVERLAY_DIR/log
+
+# To make it clear that we are in container
+export PS1="📦 $PS1"
+
+export HISTSIZE=10000
+export HISTFILESIZE=1000000
+export HISTCONTROL=ignoredups:erasedups
+
+exec "$@"
