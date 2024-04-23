@@ -1,0 +1,53 @@
+services:
+  # Base image containing dependencies.
+  dev:
+    container_name: nav2
+    # stop_signal: SIGINT
+    stop_grace_period: 20s
+    # restart: unless-stopped
+    build:
+      context: ../docker/
+      ssh:
+        - default
+      target: dev
+    # Interactive shell
+    stdin_open: true
+    tty: true
+    # Networking and IPC for ROS 2
+    network_mode: host
+    ipc: host
+    pid: host
+    # Needed to display graphical applications
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      # Allows graphical programs in the container.
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      # Allows graphical programs in the container.
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
+      - ~/.ssh:/home/angsa/.ssh
+      - $HOME/.docker_bash_history:/home/angsa/.bash_history
+      - ../:/home/angsa/overlay_ws/src/navigation2:rw
+      - shared_nav2_install:/home/angsa/overlay_ws/install
+      - shared_nav2_build:/home/angsa/overlay_ws/build
+    command: sleep infinity
+
+volumes:
+  shared_nav2_install:
+  shared_nav2_build:
