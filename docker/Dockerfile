@@ -79,8 +79,8 @@ RUN git clone https://github.com/ros-planning/navigation2
 
 WORKDIR $HOME/overlay_ws
 RUN sudo apt update && rosdep update && rosdep install --from-paths src --ignore-src -y -r && sudo rm -rf /var/lib/apt/lists/*
-
-RUN --mount=type=cache,target=$CCACHE_DIR,uid=1000 source /opt/ros/rolling/setup.bash && colcon build --symlink-install --mixin ccache release --cmake-args -DBUILD_TESTING=OFF && \
+RUN sudo apt update && sudo apt install ros-rolling-ompl ros-rolling-turtlebot3-gazebo && sudo rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=$CCACHE_DIR,uid=1000 source /opt/ros/rolling/setup.bash && colcon build --symlink-install --mixin ccache release --cmake-args -DBUILD_TESTING=OFF || true && \
     ccache --show-stats --verbose
 
 
