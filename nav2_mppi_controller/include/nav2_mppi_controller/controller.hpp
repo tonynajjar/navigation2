@@ -101,17 +101,6 @@ public:
   void setSpeedLimit(const double & speed_limit, const bool & percentage) override;
 
 protected:
-  /**
-    * @brief Visualize trajectories
-    * @param transformed_plan Transformed input plan
-    * @param cmd_stamp Command stamp
-    * @param optimal_trajectory Optimal trajectory, if already computed
-    */
-  void visualize(
-    nav_msgs::msg::Path transformed_plan,
-    const builtin_interfaces::msg::Time & cmd_stamp,
-    const Eigen::ArrayXXf & optimal_trajectory);
-
   std::string name_;
   nav2::LifecycleNode::WeakPtr parent_;
   rclcpp::Logger logger_{rclcpp::get_logger("MPPIController")};
@@ -124,7 +113,6 @@ protected:
   PathHandler path_handler_;
   TrajectoryVisualizer trajectory_visualizer_;
 
-  bool visualize_;
   bool publish_optimal_trajectory_;
 };
 
